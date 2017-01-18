@@ -20,6 +20,11 @@ class BugsnagComponent extends \yii\base\Component
      */
     public $projectRoot;
 
+    /**
+     * @var string[] Exceptions to exclude from logging
+     */
+    public $except = [];
+
     protected $client;
 
     /**
@@ -133,6 +138,11 @@ class BugsnagComponent extends \yii\base\Component
 
     public function notifyException($exception, $severity = null)
     {
+        $exceptionClass = get_class($exception);
+        if (in_array($exceptionClass, $this->except, false)) {
+            return;
+        }
+
         $metadata = null;
         if ($exception instanceof BugsnagCustomMetadataInterface)
         {
