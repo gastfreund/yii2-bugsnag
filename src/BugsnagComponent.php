@@ -15,6 +15,11 @@ class BugsnagComponent extends \yii\base\Component
 
     public $filters = ['password'];
 
+    /**
+     * @var string project root to set for Bugsnag
+     */
+    public $projectRoot;
+
     protected $client;
 
     /**
@@ -50,6 +55,10 @@ class BugsnagComponent extends \yii\base\Component
 
         Yii::trace("Setting release stage to {$this->releaseStage}.", __CLASS__);
         $this->client->setReleaseStage($this->releaseStage);
+
+        if ($this->projectRoot) {
+            $this->client->setProjectRoot($this->projectRoot);
+        }
     }
 
     /**
