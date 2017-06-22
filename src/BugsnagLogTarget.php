@@ -2,6 +2,7 @@
 namespace pinfirestudios\yii2bugsnag;
 
 use Yii;
+use yii\helpers\VarDumper;
 use \yii\log\Logger;
 
 class BugsnagLogTarget extends \yii\log\Target
@@ -72,6 +73,9 @@ class BugsnagLogTarget extends \yii\log\Target
                 list($message, $level, $category, $timestamp) = $message; 
 
                 $date = date('Y-m-d H:i:s', $timestamp) . '.' . substr(fmod($timestamp, 1), 2, 4);
+                if (!is_string($message)) {
+                    $message = VarDumper::export($message);
+                }
                 return "{$levelMap[$level]} - ({$category}) @ {$date} - {$message}";
             }, 
             self::$exportedMessages, 
