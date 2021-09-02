@@ -24,11 +24,16 @@ class BugsnagLogTarget extends \yii\log\Target
         {
             foreach ($this->messages as $message)
             {
-                list($message, $level, $category, $timestamp, $trace) = $message; 
-                
-                if ($category == BugsnagComponent::IGNORED_LOG_CATEGORY) 
+                list($message, $level, $category, $timestamp, $trace) = $message;
+
+                if ($category == BugsnagComponent::IGNORED_LOG_CATEGORY)
                 {
                     continue;
+                }
+
+                if (!is_string($message))
+                {
+                    $message = VarDumper::export($message);
                 }
 
                 if ($level == Logger::LEVEL_ERROR)
@@ -52,17 +57,10 @@ class BugsnagLogTarget extends \yii\log\Target
 
     public static function getMessages()
     {
-        $messages = self::$exportedMessages;
-
-        if (isset(self::$instance))
-        {
-            $messages = array_merge($messages, self::$instance->messages);
-        }
-
         static $levelMap = [
             Logger::LEVEL_ERROR => 'error',
             Logger::LEVEL_WARNING => 'warning',
-            Logger::LEVEL_INFO => 'info', 
+            Logger::LEVEL_INFO => 'info',
             Logger::LEVEL_TRACE => 'trace',
             Logger::LEVEL_PROFILE => 'profile',
         ];
@@ -70,16 +68,16 @@ class BugsnagLogTarget extends \yii\log\Target
         return array_map(
             function($message) use ($levelMap)
             {
-                list($message, $level, $category, $timestamp) = $message; 
+                list($message, $level, $category, $timestamp) = $message;
 
                 $date = date('Y-m-d H:i:s', $timestamp) . '.' . substr(fmod($timestamp, 1), 2, 4);
                 if (!is_string($message)) {
                     $message = VarDumper::export($message);
                 }
                 return "{$levelMap[$level]} - ({$category}) @ {$date} - {$message}";
-            }, 
-            self::$exportedMessages, 
-            isset(self::$instance) ? self::$instance->messages : [] 
+            },
+            self::$exportedMessages,
+            isset(self::$instance) ? self::$instance->messages : []
         );
     }
 }
