@@ -31,6 +31,11 @@ class BugsnagLogTarget extends \yii\log\Target
                     continue;
                 }
 
+                if (!is_string($message))
+                {
+                    $message = VarDumper::export($message);
+                }
+
                 if ($level == Logger::LEVEL_ERROR)
                 {
                     Yii::$app->bugsnag->notifyError($category, $message . " ($timestamp)", $trace);
