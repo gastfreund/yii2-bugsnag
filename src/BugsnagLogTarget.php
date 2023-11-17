@@ -70,7 +70,7 @@ class BugsnagLogTarget extends \yii\log\Target
             {
                 list($message, $level, $category, $timestamp) = $message;
 
-                $date = date('Y-m-d H:i:s', $timestamp) . '.' . substr(fmod($timestamp, 1), 2, 4);
+                $date = (new \DateTimeImmutable('@' . $timestamp))->format('Y-m-d H:i:s.v');
                 if (!is_string($message)) {
                     $message = VarDumper::export($message);
                 }
